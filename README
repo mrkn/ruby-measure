@@ -1,4 +1,4 @@
-== Measure
+= Measure library
 
 Measure is a library to handle measurment numbers.
 
@@ -16,3 +16,4 @@ If you prefer to build the gem locally:
   cd ruby-measure
   rake gem
   gem install pkg/measure-0.x.x.gem # as root
+
