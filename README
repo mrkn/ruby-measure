@@ -1,0 +1,18 @@
+== Measure
+
+Measure is a library to handle measurment numbers.
+
+== Installation
+
+The simplest approach is to install the gem (as root in some environments):
+
+  gem install -r measure
+
+== Building the Measure gem
+
+If you prefer to build the gem locally:
+
+  git clone git://github.com/mrkn/ruby-measure.git
+  cd ruby-measure
+  rake gem
+  gem install pkg/measure-0.x.x.gem # as root
