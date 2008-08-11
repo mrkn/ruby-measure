@@ -1,5 +1,7 @@
 2008-08-11  Kenta Murata  <muraken@gmail.com>
 
+	* Rakefile: replace all Spec::VERSION module to Measure::VERSION.
+
 	* lib/measure.rb (Measure.dim): add Measure.dim as alias to
 	Measure.dimension.
 
