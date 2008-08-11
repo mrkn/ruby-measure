@@ -1,3 +1,8 @@
+2008-08-11  Kenta Murata  <muraken@gmail.com>
+
+	* lib/measure.rb (Measure.dim): add Measure.dim as alias to
+	Measure.dimension.
+
 2008-08-11  Kenta Murata  <mrkn@mrkn.jp>
 
 	* version 0.1.0

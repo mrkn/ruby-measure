@@ -87,6 +87,7 @@ class Measure
     def dimension(unit)
       return @@dimension_map[resolve_alias unit]
     end
+    alias dim dimension
 
     def resolve_alias(unit)
       while @@alias_map.has_key? unit
