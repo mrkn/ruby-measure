@@ -96,8 +96,9 @@ task :publish_packages => [ :verify_user, :package, :pkg ] do
     File.join('pkg', "#{PKG_FILE_NAME}.gem"),
     File.join('pkg', "#{PKG_FILE_NAME}.zip"),
     File.join('pkg', "#{PKG_FILE_NAME}.tgz"),
+    'CHANGES'
   ]
-  unless Measure::VERSION::RELEASE_CANDIDATE
+  unless defined? Measure::VERSION::RELEASE_CANDIDATE and Measure::VERSION::RELEASE_CANDIDATE
     require 'meta_project'
     require 'rake/contrib/xforge'
 
@@ -134,7 +135,7 @@ end
 
 desc 'Publish news on RubyForge'
 task :publish_news => [ :verify_user ] do
-  unless Measure::VERSION::RELEASE_CANDIDATE
+  unless defined? Measure::VERSION::RELEASE_CANDIDATE and Measure::VERSION::RELEASE_CANDIDATE
     require 'meta_project'
     require 'rake/contrib/xforge'
 

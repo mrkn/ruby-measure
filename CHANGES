@@ -1,5 +1,8 @@
+= Measure Changes
+
 == Version 0.1.0
 
 This is the first preview release of Measure, a library for handling
 measurement numbers for Ruby.
 
+* Implemented basic one-dimensional mesurement number scheme.
