@@ -1,5 +1,9 @@
 2008-08-24  Kenta Murata  <mrkn@mrkn.jp>
 
+	* Rakefile, lib/measure.rb, spec/measure_spec.rb: merge the
+	changes by walf443 for fixing warnings "warning: parenthesize
+	argument(s) for future version" in 1.8.6.
+
 	* spec/measure_spec.rb: some specs are relocated and modified appropriately.
 
 	* spec/measure_spec.rb: replace compatible to direct_compatible.

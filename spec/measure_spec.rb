@@ -27,27 +27,27 @@ describe Measure, 'with five pre-defined units in order to unit management' do
   end
 
   it 'has defined units and has not undefined units' do
-    Measure.should have_unit :a
-    Measure.should have_unit :b
-    Measure.should have_unit :c
-    Measure.should have_unit :d
-    Measure.should have_unit :e
-    Measure.should_not have_unit :f
-    Measure.should_not have_unit :g
-    Measure.should_not have_unit :h
+    Measure.should have_unit(:a)
+    Measure.should have_unit(:b)
+    Measure.should have_unit(:c)
+    Measure.should have_unit(:d)
+    Measure.should have_unit(:e)
+    Measure.should_not have_unit(:f)
+    Measure.should_not have_unit(:g)
+    Measure.should_not have_unit(:h)
   end
 
   it 'can define an unit which has not been defined yet' do
     lambda { Measure.define_unit :f, :test }.
-      should_not raise_error Exception
+      should_not raise_error(Exception)
   end
 
   it 'can undefine a unit which has been already defined' do
     Measure.define_unit :f, :test
-    Measure.should have_unit :f
+    Measure.should have_unit(:f)
     lambda { Measure.undefine_unit :f }.
-      should_not raise_error Exception
-    Measure.should_not have_unit :f
+      should_not raise_error(Exception)
+    Measure.should_not have_unit(:f)
   end
 
   it 'raises UnitRedefinitionError' +
@@ -64,23 +64,23 @@ describe Measure, 'with five pre-defined units in order to unit management' do
 
   it 'can define and undefine aliases' do
     lambda { Measure.define_alias :alias_a, :a }.
-      should_not raise_error Exception
-    Measure.should have_unit :alias_a
+      should_not raise_error(Exception)
+    Measure.should have_unit(:alias_a)
     lambda { Measure.undefine_unit :alias_a }.
-      should_not raise_error Exception
-    Measure.should_not have_unit :alias_a
+      should_not raise_error(Exception)
+    Measure.should_not have_unit(:alias_a)
   end
 
   it 'raises UnitRedefinitionError when the unit is redefined as an alias' do
     lambda { Measure.define_alias :b, :a }.
-      should raise_error Measure::UnitRedefinitionError
+      should raise_error(Measure::UnitRedefinitionError)
   end
 
   it 'can define a scheme of conversion from an alias' do
     Measure.define_alias :alias_a, :a
     lambda { Measure.define_conversion :alias_a, :b => 10 }.
-      should_not raise_error Exception
-    Measure.should be_direct_compatible :alias_a, :b
+      should_not raise_error(Exception)
+    Measure.should be_direct_compatible(:alias_a, :b)
   end
 
   it 'can convert between two connected units' +
@@ -92,21 +92,21 @@ describe Measure, 'with five pre-defined units in order to unit management' do
   it 'can define conversion by a Proc' do
     Measure.define_unit :f, :test
     lambda { Measure.define_conversion :f, :a => lambda {|x| x + 2 } }.
-      should_not raise_error Exception
+      should_not raise_error(Exception)
   end
 
   it 'can not convert commutatively by a Proc ' do
     Measure.define_unit :f, :test
     lambda { Measure.define_conversion :f, :a => lambda {|x| x + 2 } }.
-      should_not raise_error Exception
-    Measure.should be_direct_compatible :f, :a
-    Measure.should_not be_direct_compatible :a, :f
+      should_not raise_error(Exception)
+    Measure.should be_direct_compatible(:f, :a)
+    Measure.should_not be_direct_compatible(:a, :f)
   end
 
   it 'can not find conversion route include inverse of a Proc ' do
     Measure.define_unit :f, :test
     lambda { Measure.define_conversion :f, :a => lambda {|x| x + 2 } }.
-      should_not raise_error Exception
+      should_not raise_error(Exception)
     #
     #            2      5     10
     # f ===> a <--- b ---> c <--- d
@@ -115,8 +115,8 @@ describe Measure, 'with five pre-defined units in order to unit management' do
     #                 10
     #
     #  ===> : incommutative conversion
-    Measure.should be_direct_compatible :f, :a
-    Measure.should_not be_direct_compatible :a, :f
+    Measure.should be_direct_compatible(:f, :a)
+    Measure.should_not be_direct_compatible(:a, :f)
     Measure.find_conversion_route(:f, :d).should_not be_nil
     Measure.find_conversion_route(:d, :f).should be_nil
   end
@@ -132,7 +132,7 @@ describe Measure, 'with no pre-defined units' do
   end
 
   it 'has no units when nothing is defined' do
-    Measure.num_units.should be_equal 0
+    Measure.num_units.should be_equal(0)
     Measure.units.should be_empty
   end
 
@@ -187,9 +187,9 @@ describe Measure, 'with no pre-defined units' do
     Measure.define_unit :deg_f, :temperature
     Measure.define_conversion :deg_f, :deg_c => lambda {|x| 5.0*(x - 32)/9.0 }
     Measure.define_conversion :deg_c, :deg_f => lambda {|x| 9.0*x/5.0 + 32 }
-    Measure.should be_direct_compatible :deg_f, :deg_c
-    Measure.should be_direct_compatible :deg_c, :deg_f
-    lambda { Measure(40, :deg_c).as_deg_f }.should_not raise_error Exception
+    Measure.should be_direct_compatible(:deg_f, :deg_c)
+    Measure.should be_direct_compatible(:deg_c, :deg_f)
+    lambda { Measure(40, :deg_c).as_deg_f }.should_not raise_error(Exception)
   end
 
   it 'coerce a Number to a Measure with unit 1' do
@@ -200,9 +200,9 @@ describe Measure, 'with no pre-defined units' do
   it 'can multiply any units by unit 1' do
     Measure.define_unit :a, :test
     lambda { Measure(1, :a) * Measure(1, 1) }.
-      should_not raise_error Exception
+      should_not raise_error(Exception)
     lambda { Measure(1, 1) * Measure(1, :a) }.
-      should_not raise_error Exception
+      should_not raise_error(Exception)
   end
 
   after :each do
