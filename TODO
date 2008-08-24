@@ -1,13 +1,16 @@
-= Current version
+== TODOs
+
+=== Toward the version 1.0.0
 
 - To write a spec for Measure#convert method with a unit same as receiver's one.
-- To write specs for Measure#to_{a,i,f,s}.
+- To write specs for Measure#to_{a,s}.
 - To write a spec for Measure#coerce.
 - To write specs for binary operation.
 - To write specs for comparison methods.
 - To write RDoc documents.
++ Supports incommutative conversion by Proc objects.
 
-= Future works
+=== Future works
 
 - To support composite dimension.
 - To define well-known physical constants.

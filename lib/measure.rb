@@ -20,22 +20,50 @@ class Measure
     end
 
     def has_unit?(unit)
-      unit = resolve_alias unit
-      return @@units.include? unit
+      begin
+        unit = resolve_alias unit
+        return @@units.include? unit
+      rescue InvalidUnitError
+        return false
+      end
     end
-    alias defined? has_unit?
 
-    def compatible?(u1, u2)
+    #
+    # Resolves an alias and returns the entity.
+    # The returned unit is NOT invalid always.
+    # InvalidUnitError is raised if a given unit is undefined.
+    #
+    def resolve_alias(unit)
+      # NOTE: mustn't use has_unit? method to avoid infinite recursion
+      return unit if @@units.include? unit
+      unless @@alias_map.has_key? unit
+        raise InvalidUnitError, "unit `#{unit}' is undefined"
+      end
+      while @@alias_map.has_key? unit
+        unit = @@alias_map[unit]
+      end
+      return unit
+    end
+
+    #
+    # Test direct compatibility between two units, u1 and u2.
+    #
+    def direct_compatible?(u1, u2)
       u1 = resolve_alias u1
-      raise InvalidUnitError, "unknown unit: #{u1}" unless self.defined? u1
       u2 = resolve_alias u2
-      raise InvalidUnitError, "unknown unit: #{u2}" unless self.defined? u2
       return true if u1 == u2
-      return true if @@conversion_map.has_key? u1 and @@conversion_map[u1].has_key? u2
-      return true if @@conversion_map.has_key? u2 and @@conversion_map[u2].has_key? u1
+      if @@conversion_map.has_key? u1 and @@conversion_map[u1].has_key? u2
+        return true
+      end
+      if @@conversion_map.has_key? u2 and @@conversion_map[u2].has_key? u1
+        return true unless Proc === @@conversion_map[u2][u1]
+      end
       return false
     end
 
+    #
+    # Clear all defined units.
+    #
     def clear_units
       @@units.clear
       @@dimension_map.clear
@@ -44,15 +72,26 @@ class Measure
       return nil
     end
 
+    #
+    # Returns defined units. If dimension is specified, returning
+    # units are of only the dimension.
+    #
     def units(dimension=nil)
       return @@units.dup if dimension.nil?
       @@dimension_map.select {|k, v| v == dimension }.collect{|k, v| k }
     end
 
+    #
+    # The number of defined units.
+    #
     def num_units
-      return @@units.length
+      return @@units.length + @@alias_map.length
     end
 
+    #
+    # Defines a unit. The default dimension is 1.
+    # Measure::UnitRedefinitionError is raised when the unit is redefined.
+    #
     def define_unit(unit, dimension=1)
       if @@units.include?(unit)
         if self.dimension(unit) != dimension
@@ -61,42 +100,58 @@ class Measure
       else
         @@units << unit
         @@dimension_map[unit] = dimension
+        return self
       end
     end
 
+    #
+    # Defines an alias.
+    # Measure::UnitRedefinitionError is raised when the alias is redefined.
+    # Measure::InvalidUnitError is raised when the base unit is not defined.
+    #
     def define_alias(unit, base)
-      if self.defined?(unit)
+      if self.has_unit?(unit)
         raise UnitRedefinitionError, "unit [#{unit}] is already defined"
       end
-      raise InvalidUnitError, "unknown unit: #{base}" unless self.defined? base
-      @@alias_map[unit] = base
+      @@alias_map[unit] = resolve_alias base
     end
 
-    def define_conversion(base, conversion)
-      base = resolve_alias base
-      raise InvalidUnitError, "unknown unit: #{base}" unless self.defined? base
-      @@conversion_map[base] ||= {}
-      conversion.each {|unit, factor|
-        unit = resolve_alias unit
-        raise InvalidUnitError, "unknown unit: #{unit}" unless self.defined? unit
-        @@conversion_map[base][unit] = factor
+    #
+    # Defines conversions.
+    # 
+    #
+    def define_conversion(origin, conversion)
+      origin = resolve_alias origin
+      @@conversion_map[origin] ||= {}
+      conversion.each {|target, conv|
+        target = resolve_alias target
+        @@conversion_map[origin][target] = conv
       }
       return nil
     end
 
+    def undefine_unit(unit)
+      if @@units.include? unit
+        @@conversion_map.delete unit
+        @@conversion_map.each {|k, v| v.delete unit }
+        @@units.delete unit
+        return true
+      elsif @@alias_map.has_key? unit
+        @@alias_map.delete unit
+        return true
+      end
+      return false
+    end
+
+    #
+    # 
+    #
     def dimension(unit)
       return @@dimension_map[resolve_alias unit]
     end
     alias dim dimension
 
-    def resolve_alias(unit)
-      while @@alias_map.has_key? unit
-        unit = @@alias_map[unit]
-      end
-      return unit
-    end
-
-    def find_multi_hop_conversion(u1, u2)
+    def find_conversion_route(u1, u2)
       visited = []
       queue = [[u1]]
       while route = queue.shift
@@ -108,6 +163,7 @@ class Measure
       end
       return nil
     end
+    alias find_multi_hop_conversion find_conversion_route
 
 #     def encode_dimension(dim)
 #       case dim
@@ -127,10 +183,9 @@ class Measure
 
     def neighbors(unit)
       res = []
-      if @@conversion_map.has_key?(unit)
-        res += @@conversion_map[unit].keys
-      end
-      @@conversion_map.each {|k, v| res << k if v.has_key? unit }
+      res += @@conversion_map[unit].keys if @@conversion_map.has_key?(unit)
+      @@conversion_map.each {|k, v|
+        res << k if v.has_key? unit and not Proc === v[unit] }
       return res
     end
   end # class << self
@@ -174,9 +229,9 @@ class Measure
 
   def ==(other)
     return self.value == other.value if self.unit == other.unit
-    if Measure.compatible? self.unit, other.unit
+    if Measure.direct_compatible? self.unit, other.unit
       return self == other.convert(self.unit)
-    elsif Measure.compatible? other.unit, self.unit
+    elsif Measure.direct_compatible? other.unit, self.unit
       return self.convert(other.unit) == other
     else
       return false
@@ -226,8 +281,9 @@ class Measure
   def *(other)
     case other
     when Measure
-      # TODO: dimension
       return other * self.value if self.unit == 1
+      return Measure(self.value * other.value, self.unit) if other.unit == 1
+      # TODO: dimension
       raise NotImplementedError, "this feature has not implemented yet"
 #       if self.unit == other.unit
 #         return Measure(self.value * other.value, self.unit)
@@ -281,14 +337,6 @@ class Measure
     return "#{self.value} [#{self.unit}]"
   end
 
-  def to_i
-    return self.value.to_i
-  end
-
-  def to_f
-    return self.value.to_f
-  end
-
   def to_a
     return [self.value, self.unit]
   end
@@ -296,12 +344,18 @@ class Measure
   def convert(unit)
     return self if unit == self.unit
     to_unit = Measure.resolve_alias unit
-    raise InvalidUnitError, "unknown unit: #{unit}" unless Measure.defined? unit
+    raise InvalidUnitError, "unknown unit: #{unit}" unless Measure.has_unit? unit
     from_unit = Measure.resolve_alias self.unit
-    if Measure.compatible? from_unit, to_unit
+    if Measure.direct_compatible? from_unit, to_unit
       # direct conversion
       if @@conversion_map.has_key? from_unit and @@conversion_map[from_unit].has_key? to_unit
-        value = self.value * @@conversion_map[from_unit][to_unit]
+        conv = @@conversion_map[from_unit][to_unit]
+        case conv
+        when Proc
+          value = conv[self.value]
+        else
+          value = self.value * conv
+        end
       else
         value = self.value / @@conversion_map[to_unit][from_unit].to_f
       end
@@ -310,7 +364,13 @@ class Measure
       value = self.value
       while u2 = route.shift
         if @@conversion_map.has_key? u1 and @@conversion_map[u1].has_key? u2
-          value *= @@conversion_map[u1][u2]
+          conv = @@conversion_map[u1][u2]
+          case conv
+          when Proc
+            value = conv[vaule]
+          else
+            value *= conv
+          end
         else
           value /= @@conversion_map[u2][u1].to_f
         end

@@ -1,3 +1,39 @@
+2008-08-24  Kenta Murata  <mrkn@mrkn.jp>
+
+	* .gitignore: add doc/rdoc.
+
+	* TODO: rdocnize and add some items.
+
+	* COPYING, COPYING.LIB: rdocnize.
+
+	* spec/measure_spec.rb: s/cummutative/commutative/g.
+
+	* Rakefile (rdoc): modify output directory.
+
+	* lib/measure.rb: some documentation comments are written.
+	(Measure.defined?): it is removed.
+	(Measure.resolve_alias): it now raise InvalidUnitError if the
+	given unit is invalid.
+	(Measure.compatible?): it is renamed to more intuitively name
+	`Measure.direct_compatible?', and the original is removed now.
+	(Measure.num_units): it now returns the number of both defined
+	units and aliases.
+	(Measure.define_unit): it method returns Measure class if
+	succeeded.
+	(Measure.define_conversion, Measure.neighbors, Measure#convert):
+	it now supports conversions by Proc objects.
+	(Measure.undefine_unit): it is a new method to undefine an unit.
+	(Measure.find_multi_hop_conversion): it is renamed to more
+	intuitively name `Measure.find_conversion_route', and the original
+	is now an alias.
+	(Measure#*, Measure#/): it now supports operation with values with
+	unit `1'.
+	(Measure#to_i, Measure#to_f): they are removed because of the
+	behavior of Numeric#coerce.
+
+	* lib/measure/version.rb (Measure::VERSION): change development
+	version number to `0.2.0'.
+
 2008-08-11  Kenta Murata  <muraken@gmail.com>
 
 	* Rakefile: replace all Spec::VERSION module to Measure::VERSION.
