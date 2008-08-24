@@ -104,6 +104,8 @@ class Measure
       end
     end
 
+    alias def_unit define_unit
+
     #
     # Defines an alias.
     # Measure::UnitRedefinitionError is raised when the alias is redefined.
@@ -115,6 +117,8 @@ class Measure
       end
       @@alias_map[unit] = resolve_alias base
     end
+
+    alias def_alias define_alias
 
     #
     # Defines conversions.
@@ -129,6 +133,8 @@ class Measure
       }
       return nil
     end
+
+    alias def_conversion define_conversion
 
     def undefine_unit(unit)
       if @@units.include? unit
