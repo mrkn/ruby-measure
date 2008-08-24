@@ -1,5 +1,9 @@
 2008-08-24  Kenta Murata  <mrkn@mrkn.jp>
 
+	* spec/measure_spec.rb: some specs are relocated and modified appropriately.
+
+	* spec/measure_spec.rb: replace compatible to direct_compatible.
+
 	* .gitignore: add doc/rdoc.
 
 	* TODO: rdocnize and add some items.

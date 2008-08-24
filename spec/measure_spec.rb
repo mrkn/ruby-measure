@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 require 'measure'
 
-describe Measure, 'in unit manegement' do
+describe Measure, 'with five pre-defined units in order to unit management' do
   before :each do
     # Pre-define the following conversion scheme
     #
@@ -20,6 +20,10 @@ describe Measure, 'in unit manegement' do
     Measure.define_conversion :b, :c => 5
     Measure.define_conversion :b, :e => 10
     Measure.define_conversion :d, :c => 10
+  end
+
+  it 'has five units' do
+    Measure.num_units.should == 5
   end
 
   it 'has defined units and has not undefined units' do
@@ -46,6 +50,18 @@ describe Measure, 'in unit manegement' do
     Measure.should_not have_unit :f
   end
 
+  it 'raises UnitRedefinitionError' +
+    ' when an unit is about to be redefined as a different dimension' do
+    lambda { Measure.define_unit :a, :other }.
+      should raise_error Measure::UnitRedefinitionError
+  end
+
+  it 'does not raise UnitRedefinitionError' +
+    ' when an unit is about to be redefined as a same dimension' do
+    lambda { Measure.define_unit :a, :test }.
+      should_not raise_error Measure::UnitRedefinitionError
+  end
+
   it 'can define and undefine aliases' do
     lambda { Measure.define_alias :alias_a, :a }.
       should_not raise_error Exception
@@ -55,7 +71,7 @@ describe Measure, 'in unit manegement' do
     Measure.should_not have_unit :alias_a
   end
 
-  it 'raise UnitRedefinitionError when the unit is redefined as an alias' do
+  it 'raises UnitRedefinitionError when the unit is redefined as an alias' do
     lambda { Measure.define_alias :b, :a }.
       should raise_error Measure::UnitRedefinitionError
   end
@@ -64,7 +80,7 @@ describe Measure, 'in unit manegement' do
     Measure.define_alias :alias_a, :a
     lambda { Measure.define_conversion :alias_a, :b => 10 }.
       should_not raise_error Exception
-    Measure.should be_compatible :alias_a, :b
+    Measure.should be_direct_compatible :alias_a, :b
   end
 
   it 'can convert between two connected units' +
@@ -110,7 +126,7 @@ describe Measure, 'in unit manegement' do
   end
 end
 
-describe Measure do
+describe Measure, 'with no pre-defined units' do
   before :each do
     Measure.clear_units
   end
@@ -118,21 +134,6 @@ describe Measure do
   it 'has no units when nothing is defined' do
     Measure.num_units.should be_equal 0
     Measure.units.should be_empty
-  end
-
-  it 'returns the number of defined units when call Measure.num_units' do
-    Measure.define_unit :meter, :length
-    Measure.define_unit :inch, :length
-    Measure.num_units.should == 2
-  end
-
-  it 'raises Measure::UnitRedefinitionError ' +
-    'when the [meter] is defined twice with different dimensions' do
-    Measure.define_unit :meter, :length
-    lambda { Measure.define_unit :meter, :length }.
-      should_not raise_error(Measure::UnitRedefinitionError)
-    lambda { Measure.define_unit :meter, :weight }.
-      should raise_error(Measure::UnitRedefinitionError)
   end
 
   it 'returns length units when call units(:length)' do
@@ -155,8 +156,8 @@ describe Measure do
     Measure.define_unit :meter, :length
     Measure.define_unit :inch, :length
     Measure.define_conversion :meter, :inch => 0.254
-    Measure.compatible?(:meter, :inch).should be_true
-    Measure.compatible?(:inch, :meter).should be_true
+    Measure.should be_direct_compatible :meter, :inch
+    Measure.should be_direct_compatible :inch, :meter
   end
 
   it 'can convert meter to centimeter after define_conversion(:meter, :centimeter => 100)' do
