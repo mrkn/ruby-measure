@@ -29,6 +29,7 @@ end
 desc 'Run all specs and store html output in doc/output/report.html'
 Spec::Rake::SpecTask.new('spec_html') do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
+  t.warning    = true
   t.spec_opts = [ '--format html:../../../../doc/output/report.html',
                   '--format progress',
                   '--backtrace' ]

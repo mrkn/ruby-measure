@@ -22,7 +22,7 @@ class Measure
     def has_unit?(unit)
       begin
         unit = resolve_alias unit
-        return @@units.include? unit
+        return @@units.include?(unit)
       rescue InvalidUnitError
         return false
       end
@@ -147,7 +147,7 @@ class Measure
     # 
     #
     def dimension(unit)
-      return @@dimension_map[resolve_alias unit]
+      return @@dimension_map[resolve_alias(unit)]
     end
     alias dim dimension
 
