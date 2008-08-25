@@ -2,6 +2,8 @@
 
 === Toward the version 1.0.0
 
+- Defined units should be managed by Hash instead of Array because of search speed.
+- The unit management system should be implemented as thread safe.
 - To write a spec for Measure#convert method with a unit same as receiver's one.
 - To write specs for Measure#to_{a,s}.
 - To write a spec for Measure#coerce.
