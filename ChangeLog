@@ -1,3 +1,19 @@
+2008-09-04  Kenta Murata  <mrkn@mrkn.jp>
+
+	* spec/measure_spec.rb: modified to avoid warnings ``warning:
+	parenthesize argument(s) for future version'' in 1.8.6.
+
+	* lib/measure/length.rb: add some physical length units.
+
+	* lib/measure/length.rb: enclose unit definitions by ``class
+	Measure / end'' syntax.
+
+	* lib/measure/support.rb (MeasureSupport#method_missing): replace
+	Measure.defined? Measure.has_unit?.
+
+	* lib/measure.rb (def_unit, def_alias, def_conversion): new
+	aliases for short definition form (merged changed by walf443).
+
 2008-08-24  Kenta Murata  <mrkn@mrkn.jp>
 
 	* Rakefile, lib/measure.rb, spec/measure_spec.rb: merge the

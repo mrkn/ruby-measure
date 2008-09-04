@@ -22,7 +22,7 @@ module MeasureSupport
 
       def method_missing(name, *args)
         if MeasureSupport.enable?
-          return Measure.new(self, name) if Measure.defined?(name)
+          return Measure.new(self, name) if Measure.has_unit?(name)
         end
         return measure_support_saved_method_missing(name, *args)
       end

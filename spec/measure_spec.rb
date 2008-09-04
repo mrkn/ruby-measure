@@ -53,13 +53,13 @@ describe Measure, 'with five pre-defined units in order to unit management' do
   it 'raises UnitRedefinitionError' +
     ' when an unit is about to be redefined as a different dimension' do
     lambda { Measure.define_unit :a, :other }.
-      should raise_error Measure::UnitRedefinitionError
+      should raise_error(Measure::UnitRedefinitionError)
   end
 
   it 'does not raise UnitRedefinitionError' +
     ' when an unit is about to be redefined as a same dimension' do
     lambda { Measure.define_unit :a, :test }.
-      should_not raise_error Measure::UnitRedefinitionError
+      should_not raise_error(Measure::UnitRedefinitionError)
   end
 
   it 'can define and undefine aliases' do
@@ -156,8 +156,8 @@ describe Measure, 'with no pre-defined units' do
     Measure.define_unit :meter, :length
     Measure.define_unit :inch, :length
     Measure.define_conversion :meter, :inch => 0.254
-    Measure.should be_direct_compatible :meter, :inch
-    Measure.should be_direct_compatible :inch, :meter
+    Measure.should be_direct_compatible(:meter, :inch)
+    Measure.should be_direct_compatible(:inch, :meter)
   end
 
   it 'can convert meter to centimeter after define_conversion(:meter, :centimeter => 100)' do
