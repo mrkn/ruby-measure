@@ -21,6 +21,7 @@ module MeasureSupport
       private_methods :measure_support_saved_method_missing
 
       def method_missing(name, *args)
+        # STDERR.puts "support(\#\{name\}): \#\{caller[0,4].inspect\}"
         if MeasureSupport.enable?
           return Measure.new(self, name) if Measure.has_unit?(name)
         end
@@ -34,6 +35,7 @@ class << Measure
   def with_short_form
     begin
       MeasureSupport.enable
+      # STDERR.puts "Measure.form: #{caller[0,2].inspect}"
       return yield
     ensure
       MeasureSupport.disable

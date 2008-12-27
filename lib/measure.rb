@@ -393,6 +393,7 @@ class Measure
   private_methods :saved_method_missing
 
   def method_missing(name, *args)
+    # STDERR.puts "method_missing(#{name}): #{caller[0,2].inspect}"
     if /^as_(\w+)/.match(name.to_s)
       unit = $1.to_sym
       return convert(unit)
