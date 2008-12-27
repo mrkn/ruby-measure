@@ -1,3 +1,11 @@
+2008-12-27  Kenta Murata  <mrkn@mrkn.jp>
+
+	* spec/measure_context_spec.rb: a new spec file for
+	Measure::Context which will be coming soon.
+
+	* spec/measure_unit_spec.rb: a new spec file for Measure::Unit
+	which will be coming soon.
+
 2008-09-04  Kenta Murata  <mrkn@mrkn.jp>
 
 	* spec/measure_spec.rb: modified to avoid warnings ``warning:
