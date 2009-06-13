@@ -31,7 +31,7 @@ module MeasureSupport
 end
 
 class << Measure
-  def with_short_form
+  def short_form
     begin
       MeasureSupport.enable
       return yield
@@ -40,7 +40,13 @@ class << Measure
     end
   end
 
-  alias form with_short_form
+  def enable_short_form
+    MeasureSupport.enable
+  end
+
+  def disable_short_form
+    MeasureSupport.disable
+  end
 end
 
 class Integer
