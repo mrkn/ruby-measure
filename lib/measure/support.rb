@@ -47,6 +47,10 @@ class << Measure
   def disable_short_form
     MeasureSupport.disable
   end
+
+  def short_form_available?
+    MeasureSupport.enable?
+  end
 end
 
 class Integer
