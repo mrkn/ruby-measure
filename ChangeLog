@@ -1,5 +1,7 @@
 2009-03-10  Kenta Murata  <mrkn@mrkn.jp>
 
+	* lib/measure/support.rb (Measure): add short_form_avaiable? method.
+
 	* lib/measure/support.rb (Measure): rename with_short_form to
 	short_form and add enable_ and disable_short_form methods.
 

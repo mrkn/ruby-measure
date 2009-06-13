@@ -6,7 +6,10 @@ This is the second preview release of Measure, a library for handling
 measurement numbers for Ruby.
 
 * Measure.with_short_form is renamed to Measure.short_form.
-* Measure.enable_short_form and Measure.disable_short_form is added.
+* The following methods are added:
+  - Measure.enable_short_form
+  - Measure.disable_short_form
+  - Measure.short_form_available?
 * measure/weight.rb is added.
 
 == Version 0.1.0
