@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'spec_helper')
+require_relative 'spec_helper'
 require 'measure'
 
 describe Measure, 'with five pre-defined units in order to unit management' do

@@ -5,7 +5,7 @@ require 'rake/contrib/rubyforgepublisher'
 require 'rake/clean'
 require 'rake/rdoctask'
 require 'rake/testtask'
-require 'spec/rake/spectask'
+
 require 'measure/version'
 dir = File.dirname(__FILE__)
 
@@ -20,19 +20,35 @@ PKG_FILES = FileList[
 
 task :default => [ :spec ]
 
+require 'rspec/core/rake_task'
+RSPEC_OPTIONS = [ '--backtrace', '--color' ].freeze
 desc 'Run all specs'
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/*_spec.rb']
-  t.spec_opts = ['--options', 'spec/spec.opts']
+RSpec::Core::RakeTask.new do |t|
+  t.ruby_opts = [
+    '-I', File.expand_path('lib'),
+    '-I', File.expand_path('spec'),
+  ]
+  t.rspec_opts = [
+    *RSPEC_OPTIONS,
+    '--format', 'documentation',
+    *(ENV["SPEC_OPTS"] || "").scan(/"(?:[^"]|\\")+"|'(?:[^']|\\')+'|\S+/)
+  ]
+  t.pattern = ENV["PATTERN"] if ENV["PATTERN"]
 end
 
 desc 'Run all specs and store html output in doc/output/report.html'
-Spec::Rake::SpecTask.new('spec_html') do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
-  t.warning    = true
-  t.spec_opts = [ '--format html:../../../../doc/output/report.html',
-                  '--format progress',
-                  '--backtrace' ]
+RSpec::Core::RakeTask.new('spec_html') do |t|
+  t.ruby_opts = [
+    '-I', File.expand_path('lib'),
+    '-I', File.expand_path('spec'),
+    '-w',
+  ]
+  t.rspec_opts = [
+    *RSPEC_OPTIONS,
+    '--format', 'html',
+    *(ENV["SPEC_OPTS"] || "").scan(/"(?:[^"]|\\")+"|'(?:[^']|\\')+'|\S+/)
+  ]
+  t.pattern = ENV["PATTERN"] if ENV["PATTERN"]
 end
 
 desc 'Generate RDoc'
