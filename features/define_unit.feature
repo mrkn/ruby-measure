@@ -7,3 +7,10 @@ Feature: Programmer defines units
   @wip
   Scenario: No units have been defined yet
     Given a context without any predefined units
+    When I pass the block for defining two units, :meter and :inch, to the context_eval method of the context
+      """
+      unit :meter
+      unit :inch
+      """
+    Then the units :meter and :inch is defined
+
