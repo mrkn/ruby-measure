@@ -15,23 +15,21 @@ module Measure
         evaluated.should be_true
       end
     end
-  end
 
-  describe "#unit" do
-    context "with a symbol" do
-      subject { Context.new }
-      it "should define a new unit whose name is the passing symbol" do
-        subject.unit :new_unit
-        subject.should be_include(:new_unit)
+    describe "#unit" do
+      context "with a symbol" do
+        it "should define a new unit whose name is the passing symbol" do
+          subject.unit :new_unit
+          subject.should be_include(:new_unit)
+        end
       end
     end
-  end
 
-  describe "#include?" do
-    context "just created" do
-      subject { Context.new }
-      it "should be false for any arguments" do
-        subject.should_not be_include(:unit)
+    describe "#include?" do
+      context "just created" do
+        it "should be false for any arguments" do
+          subject.should_not be_include(:unit)
+        end
       end
     end
   end
