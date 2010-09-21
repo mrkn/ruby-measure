@@ -17,19 +17,27 @@ module Measure
     end
 
     describe "#unit" do
-      context "with a symbol" do
-        it "should define a new unit whose name is the passing symbol" do
-          subject.unit :new_unit
-          subject.should be_include(:new_unit)
+      context "just created" do
+        it "should not raise error calling with :xyz" do
+          lambda { subject.unit :xyz }.should_not raise_error
+        end
+      end
+
+      context "after defining an unit :xyz" do
+        it "should not raise error calling with :xyz" do
+          lambda { subject.unit :xyz }.should_not raise_error
         end
       end
     end
 
     describe "#include?" do
       context "just created" do
-        it "should be false for any arguments" do
-          subject.should_not be_include(:unit)
-        end
+        it { should_not be_include(:xyz) }
+      end
+
+      context "after defining an unit :xyz" do
+        before(:each) { subject.unit :xyz }
+        it { should be_include(:xyz) }
       end
     end
   end
