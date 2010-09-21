@@ -22,9 +22,7 @@ task :default => [ :spec ]
 
 require 'cucumber/rake/task'
 desc 'Run all features'
-Cucumber::Rake::Task.new(:features) do |t|
-  t.cucumber_opts = "features --format pretty"
-end
+Cucumber::Rake::Task.new(:features)
 
 require 'rspec/core/rake_task'
 RSPEC_OPTIONS = [ '--backtrace', '--color' ].freeze
